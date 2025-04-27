@@ -1,48 +1,513 @@
-<!DOCTYPE html><html lang="ar">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>سور القرآن الكريم</title>
-    <link rel="stylesheet" href="style.css" type="text/css" media="all" />
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تلاوات القرآن الكريم - القارئ ياسر الدوسري</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a5f7a;
+            --secondary-color: #57c5b6;
+            --accent-color: #159895;
+            --light-color: #f9f9f9;
+            --dark-color: #002b5b;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--dark-color), var(--primary-color));
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
+            opacity: 0.3;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .surah-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+        
+        .surah-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .surah-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .surah-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+            transition: width 0.3s ease;
+        }
+        
+        .surah-card:hover::after {
+            width: 8px;
+        }
+        
+        .surah-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .surah-number {
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        audio {
+            width: 100%;
+            margin-top: 1rem;
+            border-radius: 8px;
+        }
+        
+        /* تخصيص مشغل الصوت */
+        audio::-webkit-media-controls-panel {
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+        }
+        
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-mute-button {
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+        
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        /* زر الانتقال للأعلى */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .scroll-top.visible {
+            opacity: 1;
+        }
+        
+        .scroll-top:hover {
+            background: var(--dark-color);
+            transform: translateY(-3px);
+        }
+        
+        /* شريط البحث */
+        .search-container {
+            margin: 1.5rem auto;
+            max-width: 600px;
+            padding: 0 1rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.2);
+        }
+        
+        /* تأثيرات للبطاقات */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .surah-card {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        /* التأخير في الظهور */
+        .surah-card:nth-child(1) { animation-delay: 0.1s; }
+        .surah-card:nth-child(2) { animation-delay: 0.2s; }
+        .surah-card:nth-child(3) { animation-delay: 0.3s; }
+        .surah-card:nth-child(4) { animation-delay: 0.4s; }
+        /* ... يمكنك إضافة المزيد حسب الحاجة */
+        
+        /* التكيف مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .surah-list {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+        
+        /* تأثيرات عند التحميل */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .loading {
+            animation: pulse 1.5s infinite ease-in-out;
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        
+        /* فلاتر التصنيف */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
 </head>
-<body><div class="surah">
-    <p>سورة الفاتحة</p>
-    <audio controls preload="none">
-        <source src="https://server11.mp3quran.net/yasser/001.mp3" type="audio/mpeg">
-        متصفحك لا يدعم تشغيل الصوت.
-    </audio>
-</div><!-- سيتم تكرار نفس الهيكل لباقي السور من 2 إلى 114 --><script>
-    const surahNames = [
-        "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة",
-        "يونس", "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء",
-        "الكهف", "مريم", "طه", "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان",
-        "الشعراء", "النمل", "القصص", "العنكبوت", "الروم", "لقمان", "السجدة", "الأحزاب",
-        "سبأ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر", "فصلت",
-        "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات",
-        "ق", "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد",
-        "المجادلة", "الحشر", "الممتحنة", "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق",
-        "التحريم", "الملك", "القلم", "الحاقة", "المعارج", "نوح", "الجن", "المزمل",
-        "المدثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات", "عبس", "التكوير",
-        "الانفطار", "المطففين", "الانشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر",
-        "البلد", "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر",
-        "البينة", "الزلزلة", "العاديات", "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل",
-        "قريش", "الماعون", "الكوثر", "الكافرون", "النصر", "المسد", "الإخلاص", "الفلق", "الناس"
-    ];
-
-    const container = document.body;
-
-    for (let i = 0; i < surahNames.length; i++) {
-        const surahNumber = (i + 2).toString().padStart(3, '0');
-        const div = document.createElement('div');
-        div.className = 'surah';
-        div.innerHTML = `
-            <p>سورة ${surahNames[i]}</p>
-            <audio controls preload="none">
-                <source src="https://server11.mp3quran.net/yasser/${surahNumber}.mp3" type="audio/mpeg">
-                متصفحك لا يدعم تشغيل الصوت.
-            </audio>
-        `;
-        container.appendChild(div);
-    }
-</script></body>
+<body>
+    <header>
+        <h1>تلاوات القرآن الكريم</h1>
+        <p class="subtitle">القارئ ياسر الدوسري</p>
+    </header>
+    
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="ابحث عن سورة..." id="searchInput">
+    </div>
+    
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">الكل</button>
+        <button class="filter-btn" data-filter="meccan">مكية</button>
+        <button class="filter-btn" data-filter="medinan">مدنية</button>
+    </div>
+    
+    <div class="container">
+        <div class="surah-list" id="surahList">
+            <!-- سيتم إضافة السور هنا عبر JavaScript -->
+        </div>
+    </div>
+    
+    <div class="scroll-top" id="scrollTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const surahData = [
+                {name: "الفاتحة", number: 1, type: "meccan"},
+                {name: "البقرة", number: 2, type: "medinan"},
+                {name: "آل عمران", number: 3, type: "medinan"},
+                {name: "النساء", number: 4, type: "medinan"},
+                {name: "المائدة", number: 5, type: "medinan"},
+                {name: "الأنعام", number: 6, type: "meccan"},
+                {name: "الأعراف", number: 7, type: "meccan"},
+                {name: "الأنفال", number: 8, type: "medinan"},
+                {name: "التوبة", number: 9, type: "medinan"},
+                {name: "يونس", number: 10, type: "meccan"},
+                {name: "هود", number: 11, type: "meccan"},
+                {name: "يوسف", number: 12, type: "meccan"},
+                {name: "الرعد", number: 13, type: "medinan"},
+                {name: "إبراهيم", number: 14, type: "meccan"},
+                {name: "الحجر", number: 15, type: "meccan"},
+                {name: "النحل", number: 16, type: "meccan"},
+                {name: "الإسراء", number: 17, type: "meccan"},
+                {name: "الكهف", number: 18, type: "meccan"},
+                {name: "مريم", number: 19, type: "meccan"},
+                {name: "طه", number: 20, type: "meccan"},
+                {name: "الأنبياء", number: 21, type: "meccan"},
+                {name: "الحج", number: 22, type: "medinan"},
+                {name: "المؤمنون", number: 23, type: "meccan"},
+                {name: "النور", number: 24, type: "medinan"},
+                {name: "الفرقان", number: 25, type: "meccan"},
+                {name: "الشعراء", number: 26, type: "meccan"},
+                {name: "النمل", number: 27, type: "meccan"},
+                {name: "القصص", number: 28, type: "meccan"},
+                {name: "العنكبوت", number: 29, type: "meccan"},
+                {name: "الروم", number: 30, type: "meccan"},
+                {name: "لقمان", number: 31, type: "meccan"},
+                {name: "السجدة", number: 32, type: "meccan"},
+                {name: "الأحزاب", number: 33, type: "medinan"},
+                {name: "سبأ", number: 34, type: "meccan"},
+                {name: "فاطر", number: 35, type: "meccan"},
+                {name: "يس", number: 36, type: "meccan"},
+                {name: "الصافات", number: 37, type: "meccan"},
+                {name: "ص", number: 38, type: "meccan"},
+                {name: "الزمر", number: 39, type: "meccan"},
+                {name: "غافر", number: 40, type: "meccan"},
+                {name: "فصلت", number: 41, type: "meccan"},
+                {name: "الشورى", number: 42, type: "meccan"},
+                {name: "الزخرف", number: 43, type: "meccan"},
+                {name: "الدخان", number: 44, type: "meccan"},
+                {name: "الجاثية", number: 45, type: "meccan"},
+                {name: "الأحقاف", number: 46, type: "meccan"},
+                {name: "محمد", number: 47, type: "medinan"},
+                {name: "الفتح", number: 48, type: "medinan"},
+                {name: "الحجرات", number: 49, type: "medinan"},
+                {name: "ق", number: 50, type: "meccan"},
+                {name: "الذاريات", number: 51, type: "meccan"},
+                {name: "الطور", number: 52, type: "meccan"},
+                {name: "النجم", number: 53, type: "meccan"},
+                {name: "القمر", number: 54, type: "meccan"},
+                {name: "الرحمن", number: 55, type: "medinan"},
+                {name: "الواقعة", number: 56, type: "meccan"},
+                {name: "الحديد", number: 57, type: "medinan"},
+                {name: "المجادلة", number: 58, type: "medinan"},
+                {name: "الحشر", number: 59, type: "medinan"},
+                {name: "الممتحنة", number: 60, type: "medinan"},
+                {name: "الصف", number: 61, type: "medinan"},
+                {name: "الجمعة", number: 62, type: "medinan"},
+                {name: "المنافقون", number: 63, type: "medinan"},
+                {name: "التغابن", number: 64, type: "medinan"},
+                {name: "الطلاق", number: 65, type: "medinan"},
+                {name: "التحريم", number: 66, type: "medinan"},
+                {name: "الملك", number: 67, type: "meccan"},
+                {name: "القلم", number: 68, type: "meccan"},
+                {name: "الحاقة", number: 69, type: "meccan"},
+                {name: "المعارج", number: 70, type: "meccan"},
+                {name: "نوح", number: 71, type: "meccan"},
+                {name: "الجن", number: 72, type: "meccan"},
+                {name: "المزمل", number: 73, type: "meccan"},
+                {name: "المدثر", number: 74, type: "meccan"},
+                {name: "القيامة", number: 75, type: "meccan"},
+                {name: "الإنسان", number: 76, type: "medinan"},
+                {name: "المرسلات", number: 77, type: "meccan"},
+                {name: "النبأ", number: 78, type: "meccan"},
+                {name: "النازعات", number: 79, type: "meccan"},
+                {name: "عبس", number: 80, type: "meccan"},
+                {name: "التكوير", number: 81, type: "meccan"},
+                {name: "الانفطار", number: 82, type: "meccan"},
+                {name: "المطففين", number: 83, type: "meccan"},
+                {name: "الانشقاق", number: 84, type: "meccan"},
+                {name: "البروج", number: 85, type: "meccan"},
+                {name: "الطارق", number: 86, type: "meccan"},
+                {name: "الأعلى", number: 87, type: "meccan"},
+                {name: "الغاشية", number: 88, type: "meccan"},
+                {name: "الفجر", number: 89, type: "meccan"},
+                {name: "البلد", number: 90, type: "meccan"},
+                {name: "الشمس", number: 91, type: "meccan"},
+                {name: "الليل", number: 92, type: "meccan"},
+                {name: "الضحى", number: 93, type: "meccan"},
+                {name: "الشرح", number: 94, type: "meccan"},
+                {name: "التين", number: 95, type: "meccan"},
+                {name: "العلق", number: 96, type: "meccan"},
+                {name: "القدر", number: 97, type: "meccan"},
+                {name: "البينة", number: 98, type: "medinan"},
+                {name: "الزلزلة", number: 99, type: "medinan"},
+                {name: "العاديات", number: 100, type: "meccan"},
+                {name: "القارعة", number: 101, type: "meccan"},
+                {name: "التكاثر", number: 102, type: "meccan"},
+                {name: "العصر", number: 103, type: "meccan"},
+                {name: "الهمزة", number: 104, type: "meccan"},
+                {name: "الفيل", number: 105, type: "meccan"},
+                {name: "قريش", number: 106, type: "meccan"},
+                {name: "الماعون", number: 107, type: "meccan"},
+                {name: "الكوثر", number: 108, type: "meccan"},
+                {name: "الكافرون", number: 109, type: "meccan"},
+                {name: "النصر", number: 110, type: "medinan"},
+                {name: "المسد", number: 111, type: "meccan"},
+                {name: "الإخلاص", number: 112, type: "meccan"},
+                {name: "الفلق", number: 113, type: "meccan"},
+                {name: "الناس", number: 114, type: "meccan"}
+            ];
+            
+            const surahList = document.getElementById('surahList');
+            const searchInput = document.getElementById('searchInput');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const scrollTopButton = document.getElementById('scrollTop');
+            
+            // عرض السور
+            function renderSurahs(filter = 'all', searchTerm = '') {
+                surahList.innerHTML = '';
+                
+                const filteredSurahs = surahData.filter(surah => {
+                    const matchesFilter = filter === 'all' || surah.type === filter;
+                    const matchesSearch = surah.name.includes(searchTerm) || 
+                                        surah.number.toString().includes(searchTerm);
+                    return matchesFilter && matchesSearch;
+                });
+                
+                if (filteredSurahs.length === 0) {
+                    surahList.innerHTML = '<div class="no-results">لا توجد نتائج مطابقة للبحث</div>';
+                    return;
+                }
+                
+                filteredSurahs.forEach(surah => {
+                    const surahNumberFormatted = surah.number.toString().padStart(3, '0');
+                    const surahCard = document.createElement('div');
+                    surahCard.className = `surah-card ${surah.type}`;
+                    surahCard.innerHTML = `
+                        <div class="surah-name">
+                            <span>سورة ${surah.name}</span>
+                            <span class="surah-number">${surah.number}</span>
+                        </div>
+                        <audio controls preload="none">
+                            <source src="https://server11.mp3quran.net/yasser/${surahNumberFormatted}.mp3" type="audio/mpeg">
+                            متصفحك لا يدعم تشغيل الصوت.
+                        </audio>
+                    `;
+                    surahList.appendChild(surahCard);
+                });
+            }
+            
+            // البحث عن السور
+            searchInput.addEventListener('input', function() {
+                renderSurahs(
+                    document.querySelector('.filter-btn.active').dataset.filter,
+                    this.value
+                );
+            });
+            
+            // تصفية السور
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    renderSurahs(this.dataset.filter, searchInput.value);
+                });
+            });
+            
+            // زر الانتقال للأعلى
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollTopButton.classList.add('visible');
+                } else {
+                    scrollTopButton.classList.remove('visible');
+                }
+            });
+            
+            scrollTopButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // التحميل الأولي
+            renderSurahs();
+            
+            // إضافة تأثير عند تشغيل الصوت
+            document.addEventListener('play', function(e) {
+                const audios = document.getElementsByTagName('audio');
+                for (let i = 0; i < audios.length; i++) {
+                    if (audios[i] != e.target) {
+                        audios[i].pause();
+                    }
+                }
+            }, true);
+        });
+    </script>
+</body>
 </html>
